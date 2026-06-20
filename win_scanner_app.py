@@ -484,7 +484,7 @@ HTML_TEMPLATE = r"""
 </head>
 <body>
 <header>
-  <h1>&#x1F6E1; Windows Security Threat Scanner</h1>
+  <h1>{% if shield_uri %}<img src="{{ shield_uri }}" alt="WSTS shield" style="height:30px;width:30px;vertical-align:-6px;margin-right:10px">{% else %}&#x1F6E1; {% endif %}Windows Security Threat Scanner - WSTS</h1>
   <div style="display:flex;align-items:center;gap:8px">
     <span id="scan-time"></span>
     <span id="spinner">&#9696;</span>
@@ -704,9 +704,32 @@ window.addEventListener('DOMContentLoaded', function(){
 """
 
 
+def _shield_data_uri() -> str:
+    """Return the bundled WSTS shield as a base64 data URI (empty if missing).
+
+    Works both in dev and inside a PyInstaller one-file build (sys._MEIPASS).
+    """
+    import base64
+    import sys
+
+    base = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
+    candidates = [
+        os.path.join(base, "static", "img", "wsts_shield.png"),
+        os.path.join(base, "wsts_shield.png"),
+    ]
+    for path in candidates:
+        try:
+            with open(path, "rb") as fh:
+                encoded = base64.b64encode(fh.read()).decode("ascii")
+            return "data:image/png;base64," + encoded
+        except OSError:
+            continue
+    return ""
+
+
 @app.route("/")
 def index():
-    return render_template_string(HTML_TEMPLATE)
+    return render_template_string(HTML_TEMPLATE, shield_uri=_shield_data_uri())
 
 
 @app.route("/api/scan")
