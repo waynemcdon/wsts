@@ -85,6 +85,23 @@ code {
   letter-spacing: -0.5px;
 }
 
+.hero-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.hero-title h1 { margin: 0 0 18px; }
+
+.hero-logo {
+  flex-shrink: 0;
+  object-fit: contain;
+  width: clamp(48px, 8vw, 64px);
+  height: auto;
+}
+
 .tagline { font-size: 1.15rem; color: var(--fg); margin: 0 auto 16px; max-width: 680px; }
 .hero-assurance {
   display: inline-block;
