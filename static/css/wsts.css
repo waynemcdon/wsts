@@ -235,6 +235,8 @@ pre.cmd { color: #7ee787; }
   font-size: 0.88rem;
 }
 .footer-fine { font-size: 0.82rem; margin-top: 6px; }
+.footer-tagline { color: var(--fg); font-size: 0.95rem; margin-bottom: 10px; }
+.footer-tagline strong { color: var(--fg); }
 
 /* ── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
