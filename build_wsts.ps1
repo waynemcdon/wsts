@@ -74,6 +74,15 @@ if ($CertThumbprint) {
     Write-Host "[2/5] Signing with cert $CertThumbprint..." -ForegroundColor Yellow
     $signtool = Get-Command signtool.exe -ErrorAction SilentlyContinue
     if (-not $signtool) {
+        # Fall back to locating signtool in an installed Windows SDK.
+        $sdkRoot = "C:\Program Files (x86)\Windows Kits\10\bin"
+        $found = Get-ChildItem $sdkRoot -Recurse -Filter signtool.exe -ErrorAction SilentlyContinue |
+            Where-Object { $_.FullName -like "*\x64\*" } |
+            Sort-Object FullName -Descending |
+            Select-Object -First 1
+        if ($found) { $signtool = [pscustomobject]@{ Source = $found.FullName } }
+    }
+    if (-not $signtool) {
         throw "signtool.exe not found on PATH. Install the Windows SDK or omit -CertThumbprint."
     }
     & $signtool.Source sign `
