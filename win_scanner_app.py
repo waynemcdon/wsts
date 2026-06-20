@@ -490,7 +490,7 @@ HTML_TEMPLATE = r"""
 </head>
 <body>
 <header>
-  <h1>{% if shield_uri %}<img src="{{ shield_uri }}" alt="WSTS shield" style="height:30px;width:30px;vertical-align:-6px;margin-right:10px">{% else %}&#x1F6E1; {% endif %}Windows Security Threat Scanner - WSTS</h1>
+  <h1>{% if shield_uri %}<img src="{{ shield_uri }}" alt="WSTS shield" style="height:44px;width:44px;vertical-align:-11px;margin-right:12px">{% else %}&#x1F6E1; {% endif %}Windows Security Threat Scanner - WSTS</h1>
   <div style="display:flex;align-items:center;gap:8px">
     <span id="scan-time"></span>
     <span id="spinner">&#9696;</span>
