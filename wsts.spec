@@ -14,7 +14,7 @@ import os
 block_cipher = None
 
 # wsts/ is the self-contained project root (this spec lives in it).
-PROJECT_DIR = os.path.abspath(os.path.dirname(SPECPATH))  # noqa: F821 (SPECPATH injected by PyInstaller)
+PROJECT_DIR = os.path.abspath(SPECPATH)  # noqa: F821 (SPECPATH injected by PyInstaller)
 
 a = Analysis(
     [os.path.join(PROJECT_DIR, 'win_scanner_app.py')],

@@ -6,10 +6,11 @@
       "ResourceRecordSet": {
         "Name": "wsts.spatcyber.com.",
         "Type": "A",
-        "TTL": 300,
-        "ResourceRecords": [
-          { "Value": "REPLACE_WITH_SERVER_IP" }
-        ]
+        "AliasTarget": {
+          "HostedZoneId": "Z35SXDOTRQ7X7K",
+          "DNSName": "urlcybersecurity-alb-777245778.us-east-1.elb.amazonaws.com.",
+          "EvaluateTargetHealth": false
+        }
       }
     },
     {
