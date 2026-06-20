@@ -683,9 +683,66 @@ def api_scan():
 
 
 if __name__ == "__main__":
+    import socket
+    import sys
+    import threading
+    import webbrowser
+
+    HOST = "127.0.0.1"
+    PORT = 5900
+    URL = f"http://{HOST}:{PORT}"
+
+    # In a windowed (--noconsole) PyInstaller build, sys.stdout/stderr are None.
+    # Werkzeug writes to stderr, so give it a real sink to avoid silent crashes.
+    if sys.stdout is None or sys.stderr is None:
+        try:
+            log_path = os.path.join(
+                os.environ.get("TEMP", os.path.expanduser("~")), "wsts.log"
+            )
+            _sink = open(log_path, "a", buffering=1, encoding="utf-8")
+        except Exception:
+            _sink = open(os.devnull, "w")
+        if sys.stdout is None:
+            sys.stdout = _sink
+        if sys.stderr is None:
+            sys.stderr = _sink
+
+    def _already_running():
+        """True if another instance already holds the port."""
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(0.5)
+            return s.connect_ex((HOST, PORT)) == 0
+
+    # If WSTS is already running, just open the dashboard and exit.
+    if _already_running():
+        webbrowser.open(URL)
+        sys.exit(0)
+
+    # Open the dashboard in the default browser once the server is up.
+    threading.Timer(1.2, lambda: webbrowser.open(URL)).start()
+
     print("=" * 60)
-    print("  Windows SOC Threat Scanner")
-    print("  http://127.0.0.1:5900")
+    print("  Windows Security Threat Scanner (WSTS)")
+    print(f"  {URL}")
     print("  NOTE: Run as Administrator for full access")
     print("=" * 60)
-    app.run(host="127.0.0.1", port=5900, debug=False)
+
+    try:
+        app.run(host=HOST, port=PORT, debug=False, use_reloader=False)
+    except SystemExit:
+        raise
+    except Exception as exc:  # pragma: no cover - last-resort visibility
+        print(f"WSTS failed to start: {exc}")
+        try:
+            import ctypes
+
+            ctypes.windll.user32.MessageBoxW(
+                None,
+                f"WSTS could not start the local dashboard.\n\n{exc}",
+                "WSTS",
+                0x10,  # MB_ICONERROR
+            )
+        except Exception:
+            pass
+        sys.exit(1)
+

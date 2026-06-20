@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "filename": "WSTS-Setup-1.0.0.exe",
   "filesize": "15.5 MB",
-  "size_bytes": 16245576,
-  "sha256": "bce17eaeded7096249c77301f5c3e0a53681a5ba267628666974c093ec3010e8",
+  "size_bytes": 16244832,
+  "sha256": "95b9cbbd1fc8c8a82772ea0a9b76c80edf40a1aa26aebd2937c7f132692f75f8",
   "signed": false,
   "publisher": "Antibody Cyber Technology, LLC",
   "download_url": "/downloads/WSTS-Setup-1.0.0.exe",
   "sha256_url": "/downloads/WSTS-Setup-1.0.0.exe.sha256",
-  "virustotal_url": "https://www.virustotal.com/gui/file/bce17eaeded7096249c77301f5c3e0a53681a5ba267628666974c093ec3010e8"
+  "virustotal_url": "https://www.virustotal.com/gui/file/95b9cbbd1fc8c8a82772ea0a9b76c80edf40a1aa26aebd2937c7f132692f75f8"
 }
