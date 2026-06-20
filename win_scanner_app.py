@@ -1,5 +1,5 @@
 """
-win_scanner_app.py — Windows SOC Threat Scanner (Flask web UI)
+win_scanner_app.py — Windows Security Threat Scanner (Flask web UI)
 Scans local Windows artifacts for malware indicators, persistence
 mechanisms, and evidence of log/credential-store tampering.
 
@@ -395,7 +395,7 @@ HTML_TEMPLATE = r"""
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Windows SOC Threat Scanner</title>
+<title>Windows Security Threat Scanner</title>
 <style>
   :root{
     --bg:#0d1117;--panel:#161b22;--border:#30363d;
@@ -463,7 +463,18 @@ HTML_TEMPLATE = r"""
   .chevron{font-size:.8rem;color:var(--gray);transition:transform .2s}
   .collapsed .chevron{transform:rotate(-90deg)}
   .sec-body.hidden{display:none}
-  #spinner{display:none;margin-left:10px;color:var(--gray)}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  #spinner{display:none;margin-left:10px;color:var(--blue);font-weight:700}
+  #spinner.on{display:inline-block;animation:spin .9s linear infinite}
+  #scan-banner{display:none;align-items:center;gap:14px;background:#0d1a2b;
+    border:1px solid var(--blue);border-radius:10px;padding:14px 20px;
+    margin-bottom:20px;color:var(--white)}
+  #scan-banner.on{display:flex}
+  #scan-banner .ring{width:22px;height:22px;flex-shrink:0;border:3px solid #1c3a5e;
+    border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
+  .ready-prompt{width:100%;background:#0d1a2b;border:1px solid var(--blue);
+    border-radius:10px;padding:16px 20px;color:var(--text)}
+  .ready-prompt b{color:var(--white)}
 
   /* scrollable large tables */
   .scroll-wrap{max-height:480px;overflow-y:auto}
@@ -473,15 +484,20 @@ HTML_TEMPLATE = r"""
 </head>
 <body>
 <header>
-  <h1>&#x1F6E1; Windows SOC Threat Scanner</h1>
+  <h1>&#x1F6E1; Windows Security Threat Scanner</h1>
   <div style="display:flex;align-items:center;gap:8px">
     <span id="scan-time"></span>
-    <span id="spinner">&#9696; scanning…</span>
+    <span id="spinner">&#9696;</span>
     <button id="scan-btn" onclick="runScan()">&#x21BA; Scan Now</button>
   </div>
 </header>
 
 <main>
+  <div id="scan-banner">
+    <div class="ring"></div>
+    <div><b>Scanning your system&hellip;</b> inspecting Prefetch, Startup, Event Logs,
+    Credential hives &amp; Amcache. Everything runs locally &mdash; nothing leaves this PC.</div>
+  </div>
   <div class="summary-row" id="summary"></div>
 
   <section id="sec-prefetch">
@@ -645,7 +661,14 @@ function renderAmcache(ac){
 async function runScan(){
   const btn=document.getElementById('scan-btn');
   const spin=document.getElementById('spinner');
-  btn.disabled=true; spin.style.display='inline';
+  const banner=document.getElementById('scan-banner');
+  const started=Date.now();
+  btn.disabled=true; btn.textContent='\u27F3 Scanning\u2026';
+  spin.classList.add('on'); banner.classList.add('on');
+  ['prefetch','startup','evtx','creds','amcache'].forEach(id=>{
+    const b=document.getElementById('body-'+id);
+    if(b) b.innerHTML='<div class="inaccessible">Scanning\u2026</div>';
+  });
   try{
     const r=await fetch('/api/scan');
     if(!r.ok) throw new Error('HTTP '+r.status);
@@ -659,12 +682,22 @@ async function runScan(){
   }catch(e){
     alert('Scan failed: '+e.message);
   }finally{
-    btn.disabled=false; spin.style.display='none';
+    // Keep the scanning banner visible long enough to be perceptible.
+    const finish=()=>{
+      btn.disabled=false; btn.innerHTML='&#x21BA; Scan Now';
+      spin.classList.remove('on'); banner.classList.remove('on');
+    };
+    const elapsed=Date.now()-started;
+    if(elapsed<800){ setTimeout(finish, 800-elapsed); } else { finish(); }
   }
 }
 
-// Auto-scan on load
-window.addEventListener('DOMContentLoaded', runScan);
+// Show a ready prompt; the user starts the scan explicitly with "Scan Now".
+window.addEventListener('DOMContentLoaded', function(){
+  document.getElementById('summary').innerHTML=
+    '<div class="ready-prompt">Ready. Click <b>Scan Now</b> to inspect this PC. '+
+    'WSTS performs a <b>read-only</b> scan entirely on your machine and never uploads anything.</div>';
+});
 </script>
 </body>
 </html>
