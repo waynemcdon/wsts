@@ -3,9 +3,9 @@
     "version":  "1.0.0",
     "filename":  "WSTS-Setup-1.0.0.exe",
     "filesize":  "15.5 MB",
-    "sha256":  "9fae2d6c960c344b88ff54b09ef53db3b57afe190506522ee1bd85ce3982846c",
+    "sha256":  "1e38859dfc8d65fdc0b2ff96fe8007fcfd3d69685cc338c18affa99a960a6990",
     "signed":  true,
     "download_url":  "/downloads/WSTS-Setup-1.0.0.exe",
-    "virustotal_url":  "https://www.virustotal.com/gui/file/9fae2d6c960c344b88ff54b09ef53db3b57afe190506522ee1bd85ce3982846c",
-    "released":  "2026-06-20T20:09:57Z"
+    "virustotal_url":  "https://www.virustotal.com/gui/file/1e38859dfc8d65fdc0b2ff96fe8007fcfd3d69685cc338c18affa99a960a6990",
+    "released":  "2026-06-20T20:32:29Z"
 }

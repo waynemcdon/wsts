@@ -52,11 +52,33 @@ KNOWN_SUSPICIOUS_PREFETCH = {
     "cmd",
 }
 
-# Extensions that are suspicious in startup folders
-SUSPICIOUS_STARTUP_EXTS = {
-    ".ps1", ".vbs", ".bat", ".cmd", ".js", ".jse", ".wsh", ".wsf",
-    ".hta", ".scr", ".pif", ".lnk", ".dll",
+# Extensions that are outright risky to find auto-running from a Startup folder.
+# Scripts and "disguised executable" types should essentially never live here.
+HIGH_RISK_STARTUP_EXTS = {
+    ".ps1", ".vbs", ".vbe", ".js", ".jse", ".wsh", ".wsf",
+    ".bat", ".cmd", ".hta", ".scr", ".pif", ".com",
 }
+# Plain executables / libraries: common in Startup but worth confirming.
+EXEC_STARTUP_EXTS = {".exe", ".dll"}
+
+# Interpreters a Startup .lnk should rarely point at directly — the classic
+# "living off the land" binaries abused for persistence.
+SUSPICIOUS_LNK_TARGETS = {
+    "powershell.exe", "pwsh.exe", "cmd.exe", "wscript.exe", "cscript.exe",
+    "mshta.exe", "rundll32.exe", "regsvr32.exe", "msbuild.exe",
+    "installutil.exe", "certutil.exe", "bitsadmin.exe", "curl.exe",
+}
+# Command-line tokens that indicate an obfuscated / download-and-run payload.
+SUSPICIOUS_ARG_TOKENS = (
+    "-enc", "-encodedcommand", "frombase64string", "downloadstring",
+    "downloadfile", "iex", "invoke-expression", "-nop", "-noprofile",
+    "-w hidden", "-windowstyle hidden", "bypass", "http://", "https://",
+)
+# Folders a legitimate auto-start target almost never lives in.
+SUSPICIOUS_TARGET_DIRS = (
+    "\\temp\\", "\\tmp\\", "\\appdata\\local\\temp\\",
+    "\\downloads\\", "\\users\\public\\",
+)
 
 # Threshold: hive/log modified within this many hours = flag as recent
 RECENT_HOURS = 24
@@ -151,6 +173,102 @@ def scan_prefetch() -> dict:
     }
 
 
+def _lnk_decode_ansi(raw: bytes) -> str:
+    """Decode an ANSI string from a .lnk using the best available codec."""
+    for enc in ("mbcs", "cp1252", "latin-1"):
+        try:
+            return raw.decode(enc, "replace")
+        except (LookupError, UnicodeError):
+            continue
+    return raw.decode("latin-1", "replace")
+
+
+def _read_lnk_string(buf: bytes, pos: int, is_unicode: bool):
+    """Read one SHLLINK StringData block (2-byte char count + chars)."""
+    if pos + 2 > len(buf):
+        return "", pos
+    count = int.from_bytes(buf[pos:pos + 2], "little")
+    pos += 2
+    if is_unicode:
+        nbytes = count * 2
+        text = buf[pos:pos + nbytes].decode("utf-16-le", "replace")
+    else:
+        nbytes = count
+        text = _lnk_decode_ansi(buf[pos:pos + nbytes])
+    return text, pos + nbytes
+
+
+def _resolve_lnk_target(path: str):
+    """Best-effort pure-Python parse of a Windows .lnk (MS-SHLLINK).
+
+    Returns (target_path or None, arguments or None). No pywin32 dependency.
+    """
+    try:
+        with open(path, "rb") as fh:
+            buf = fh.read(64 * 1024)
+        if len(buf) < 76 or buf[0] != 0x4C:
+            return None, None
+
+        flags = int.from_bytes(buf[20:24], "little")
+        HAS_IDLIST = flags & 0x1
+        HAS_LINKINFO = flags & 0x2
+        HAS_NAME = flags & 0x4
+        HAS_RELPATH = flags & 0x8
+        HAS_WORKDIR = flags & 0x10
+        HAS_ARGS = flags & 0x20
+        IS_UNICODE = flags & 0x80
+
+        pos = 76  # fixed header size
+
+        if HAS_IDLIST:
+            if pos + 2 > len(buf):
+                return None, None
+            idlist_size = int.from_bytes(buf[pos:pos + 2], "little")
+            pos += 2 + idlist_size
+
+        target = None
+        if HAS_LINKINFO and pos + 4 <= len(buf):
+            li_start = pos
+            li_size = int.from_bytes(buf[pos:pos + 4], "little")
+            li = buf[li_start:li_start + li_size]
+            if len(li) >= 28:
+                li_flags = int.from_bytes(li[8:12], "little")
+                local_base_off = int.from_bytes(li[16:20], "little")
+                common_suffix_off = int.from_bytes(li[24:28], "little")
+                base = suffix = ""
+                if (li_flags & 0x1) and 0 < local_base_off < len(li):
+                    end = li.find(b"\x00", local_base_off)
+                    base = _lnk_decode_ansi(li[local_base_off:end])
+                if 0 < common_suffix_off < len(li):
+                    end = li.find(b"\x00", common_suffix_off)
+                    suffix = _lnk_decode_ansi(li[common_suffix_off:end])
+                if base:
+                    target = base + suffix
+            pos = li_start + li_size
+
+        rel_path = None
+        args = None
+        if HAS_NAME:
+            _, pos = _read_lnk_string(buf, pos, IS_UNICODE)
+        if HAS_RELPATH:
+            rel_path, pos = _read_lnk_string(buf, pos, IS_UNICODE)
+        if HAS_WORKDIR:
+            _, pos = _read_lnk_string(buf, pos, IS_UNICODE)
+        if HAS_ARGS:
+            args, pos = _read_lnk_string(buf, pos, IS_UNICODE)
+
+        if not target and rel_path:
+            try:
+                target = os.path.normpath(
+                    os.path.join(os.path.dirname(path), rel_path))
+            except OSError:
+                target = rel_path
+
+        return (target or None), (args or None)
+    except (OSError, ValueError, IndexError):
+        return None, None
+
+
 def scan_startup_persistence() -> dict:
     """Check startup folders for persistence artifacts."""
     startup_paths = []
@@ -193,25 +311,72 @@ def scan_startup_persistence() -> dict:
                 continue
             st = _safe_stat(str(item))
             ext = item.suffix.lower()
+            full_path = str(item)
             flags = []
-            if ext in SUSPICIOUS_STARTUP_EXTS:
-                flags.append("SUSPICIOUS_EXTENSION")
-            if st and _age_hours(st.st_mtime) < RECENT_HOURS:
+            target = None
+            args = None
+
+            recently = bool(st and _age_hours(st.st_mtime) < RECENT_HOURS)
+
+            if ext == ".lnk":
+                target, args = _resolve_lnk_target(full_path)
+                tgt_l = (target or "").lower()
+                args_l = (args or "").lower()
+                tgt_name = os.path.basename(tgt_l)
+                bad_target = tgt_name in SUSPICIOUS_LNK_TARGETS
+                bad_args = any(tok in args_l for tok in SUSPICIOUS_ARG_TOKENS)
+                bad_dir = any(d in tgt_l for d in SUSPICIOUS_TARGET_DIRS)
+                if bad_target or bad_args or bad_dir:
+                    flags.append("SUSPICIOUS_LNK_TARGET")
+                    severity = "HIGH"
+                    note = ("This shortcut launches a command interpreter or runs "
+                            "from an unusual location. Review the target/command "
+                            "shown here before trusting it; if you did not create "
+                            "it, delete the .lnk from the Startup folder above.")
+                else:
+                    severity = "LOW"
+                    note = ("Normal startup shortcut. The Target column shows what "
+                            "it launches — if that program is one you expect, it is "
+                            "safe to keep. To remove it: delete this .lnk from the "
+                            "Startup folder above, or use Task Manager \u2192 Startup apps.")
+            elif ext in HIGH_RISK_STARTUP_EXTS:
+                flags.append("SCRIPT_IN_STARTUP")
+                severity = "HIGH"
+                note = ("A script set to auto-run at logon is a common persistence "
+                        "technique. Open the file (Right-click \u2192 Edit) to review what "
+                        "it does. If unexpected, delete it from the Startup folder.")
+            elif ext in EXEC_STARTUP_EXTS:
+                flags.append("EXECUTABLE_IN_STARTUP")
+                severity = "MEDIUM"
+                note = ("An executable auto-runs at logon. Confirm it is a program "
+                        "you installed and that it is digitally signed (Right-click "
+                        "\u2192 Properties \u2192 Digital Signatures).")
+            else:
+                severity = "LOW"
+                note = "Data/support file — typically benign."
+
+            if recently:
                 flags.append("RECENTLY_MODIFIED")
+                if severity == "LOW":
+                    severity = "MEDIUM"
+                note += (" Note: this item was modified within the last "
+                         f"{RECENT_HOURS}h — unexpected recent changes warrant a closer look.")
+
             items_info.append({
                 "name": item.name,
+                "full_path": full_path,
                 "ext": ext,
                 "size_bytes": st.st_size if st else None,
                 "modified": _fmt_ts(st.st_mtime) if st else "N/A",
+                "target": target,
+                "target_args": args,
                 "flags": flags,
-                "severity": "HIGH" if "SUSPICIOUS_EXTENSION" in flags else
-                            ("MEDIUM" if "RECENTLY_MODIFIED" in flags else "LOW"),
+                "severity": severity,
+                "note": note,
             })
 
-        items_info.sort(key=lambda x: (
-            0 if "SUSPICIOUS_EXTENSION" in x["flags"] else 1,
-            0 if "RECENTLY_MODIFIED" in x["flags"] else 1,
-        ))
+        _sev_rank = {"HIGH": 0, "MEDIUM": 1, "LOW": 2}
+        items_info.sort(key=lambda x: _sev_rank.get(x["severity"], 3))
 
         findings.append({
             "scope": scope,
@@ -219,7 +384,7 @@ def scan_startup_persistence() -> dict:
             "path": path,
             "accessible": True,
             "item_count": len(items_info),
-            "suspicious_count": sum(1 for i in items_info if "SUSPICIOUS_EXTENSION" in i["flags"]),
+            "suspicious_count": sum(1 for i in items_info if i["severity"] == "HIGH"),
             "items": items_info,
         })
 
@@ -451,7 +616,8 @@ HTML_TEMPLATE = r"""
     font-size:.7rem;background:#1c2128;border:1px solid var(--border);color:var(--yellow)}
   .flag.KNOWN_SUSPICIOUS_TOOL,.flag.POSSIBLY_CLEARED{color:var(--red);border-color:var(--red)}
   .flag.RECENTLY_MODIFIED,.flag.RAN_LAST_1H,.flag.RAN_LAST_24H{color:var(--orange);border-color:var(--orange)}
-  .flag.SUSPICIOUS_EXTENSION{color:var(--yellow);border-color:var(--yellow)}
+  .flag.SUSPICIOUS_EXTENSION,.flag.SCRIPT_IN_STARTUP,.flag.SUSPICIOUS_LNK_TARGET{color:var(--red);border-color:var(--red)}
+  .flag.EXECUTABLE_IN_STARTUP{color:var(--yellow);border-color:var(--yellow)}
   .flag.CRITICAL_LOG{color:var(--blue);border-color:var(--blue)}
 
   .path{font-size:.75rem;color:var(--gray);font-family:monospace}
@@ -459,6 +625,8 @@ HTML_TEMPLATE = r"""
   .scope-label{font-size:.8rem;font-weight:700;color:var(--blue);padding:8px 12px 4px;
     border-bottom:1px solid var(--border);background:#0d1117}
   .no-items{color:var(--gray);padding:10px 18px;font-style:italic}
+  .guide-note{font-size:.8rem;color:var(--text);background:#0d1a2b;border:1px solid var(--blue);
+    border-radius:8px;padding:10px 14px;margin:0 0 12px;line-height:1.5}
 
   .chevron{font-size:.8rem;color:var(--gray);transition:transform .2s}
   .collapsed .chevron{transform:rotate(-90deg)}
@@ -555,6 +723,7 @@ HTML_TEMPLATE = r"""
 <script>
 function sev(s){return `<span class="sev ${s}">${s}</span>`}
 function flags(arr){return arr.map(f=>`<span class="flag ${f}">${f}</span>`).join('')}
+function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 
 function toggleSection(id){
   const sec=document.getElementById(id);
@@ -603,21 +772,32 @@ function renderPrefetch(pf){
 
 function renderStartup(startup){
   const el=document.getElementById('body-startup');
-  let html='';
+  let html='<div class="guide-note">Each item shows <b>what it launches</b> (Target / Command) and <b>how to remediate</b> it. '+
+    'To remove a startup entry: delete its file from the folder shown, or open <b>Task Manager \u2192 Startup apps</b>. '+
+    'Verify a target is genuine via <b>Right-click \u2192 Properties \u2192 Digital Signatures</b>.</div>';
   for(const loc of startup.locations){
     html+=`<div class="scope-label">${loc.scope==='global'?'&#x1F310;':
-      '&#x1F464;'} ${loc.owner} — <span class="path">${loc.path}</span></div>`;
-    if(!loc.accessible){html+=`<div class="inaccessible">Inaccessible: ${loc.error}</div>`;continue}
+      '&#x1F464;'} ${esc(loc.owner)} — <span class="path">${esc(loc.path)}</span></div>`;
+    if(!loc.accessible){html+=`<div class="inaccessible">Inaccessible: ${esc(loc.error)}</div>`;continue}
     if(!loc.items.length){html+='<div class="no-items">Empty — no startup items.</div>';continue}
-    let rows=loc.items.map(i=>`<tr>
-      <td>${sev(i.severity)}</td>
-      <td style="font-family:monospace">${i.name}</td>
-      <td>${i.ext||'—'}</td>
-      <td>${i.size_bytes!=null?(i.size_bytes/1024).toFixed(1)+' KB':'—'}</td>
-      <td>${i.modified}</td>
-      <td>${flags(i.flags)||'—'}</td>
-    </tr>`).join('');
-    html+=`<table><thead><tr><th>SEV</th><th>File</th><th>Ext</th><th>Size</th><th>Modified</th><th>Flags</th></tr></thead>
+    let rows=loc.items.map(i=>{
+      const tgt = i.target
+        ? `<div style="font-family:monospace;font-size:.78rem">${esc(i.target)}`+
+          `${i.target_args?` <span style="color:var(--orange)">${esc(i.target_args)}</span>`:''}</div>`
+        : '<span style="color:var(--gray)">— (not a shortcut)</span>';
+      const note = i.note
+        ? `<div style="color:var(--gray);font-size:.76rem;margin-top:4px;line-height:1.4">${esc(i.note)}</div>`
+        : '';
+      return `<tr>
+        <td>${sev(i.severity)}</td>
+        <td><div style="font-family:monospace" title="${esc(i.full_path)}">${esc(i.name)}</div>
+          <div style="color:var(--gray);font-size:.72rem">${esc(i.full_path)}</div>${note}</td>
+        <td>${tgt}</td>
+        <td>${esc(i.modified)}</td>
+        <td>${flags(i.flags)||'—'}</td>
+      </tr>`;
+    }).join('');
+    html+=`<table><thead><tr><th>SEV</th><th>File / Location</th><th>Target / Command</th><th>Modified</th><th>Flags</th></tr></thead>
       <tbody>${rows}</tbody></table>`;
   }
   el.innerHTML=html;
