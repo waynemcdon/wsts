@@ -1,0 +1,5 @@
+Contact: mailto:security@spatcyber.com
+Expires: 2027-06-20T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://wsts.spatcyber.com/.well-known/security.txt
+Policy: https://wsts.spatcyber.com/

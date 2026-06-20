@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Windows Security Threat Scanner (WSTS) — Antibody Cyber Technology</title>
+  <meta name="description" content="WSTS is a free, open, read-only Windows security tool that scans your PC for malware indicators, persistence mechanisms, and log/credential-store tampering. Runs 100% locally — nothing leaves your machine.">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph / social -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Antibody Cyber Technology">
+  <meta property="og:title" content="Windows Security Threat Scanner (WSTS)">
+  <meta property="og:description" content="Free, read-only local threat scanner for Windows. Detects malware artifacts, persistence, and tampering. Runs entirely offline — no data ever leaves your PC.">
+  <meta property="og:url" content="https://wsts.spatcyber.com/">
+  <meta property="og:image" content="https://wsts.spatcyber.com/static/img/wsts_shield.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Windows Security Threat Scanner (WSTS)">
+  <meta name="twitter:description" content="Free, read-only local threat scanner for Windows. Runs entirely offline.">
+  <meta name="twitter:image" content="https://wsts.spatcyber.com/static/img/wsts_shield.png">
+
+  <link rel="canonical" href="https://wsts.spatcyber.com/">
+  <link rel="icon" type="image/png" href="/static/img/favicon.png">
+  <link rel="stylesheet" href="/static/css/wsts.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <img class="brand-logo" src="/static/img/wsts_shield.png" alt="WSTS Shield" width="56" height="56">
+      <div class="brand-text">
+        <span class="brand-name">WSTS</span>
+        <span class="brand-sub">Windows Security Threat Scanner</span>
+      </div>
+    </div>
+    <nav class="site-nav">
+      <a href="#how">How it works</a>
+      <a href="#trust">Why it's safe</a>
+      <a href="#verify">Verify download</a>
+      <a href="#download">Download</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ── Hero ─────────────────────────────────────────────────────────── -->
+    <section class="hero">
+      <h1>Windows Security Threat Scanner</h1>
+      <p class="tagline">
+        A free, <strong>read-only</strong> forensic scanner that inspects your
+        Windows PC for malware indicators, persistence mechanisms, and evidence
+        of log or credential-store tampering.
+      </p>
+      <p class="hero-assurance">
+        Runs <strong>100% locally</strong>. No account. No telemetry.
+        Nothing ever leaves your machine.
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#download">Download for Windows</a>
+        <a class="btn btn-ghost" href="#verify">Verify the file first</a>
+      </div>
+      <p class="hero-meta">
+        Version <span data-field="version">1.0.0</span> &middot;
+        Windows 10 / 11 (64-bit) &middot;
+        <a href="https://github.com/waynemcdon/spat" rel="noopener">Open source</a>
+      </p>
+    </section>
+
+    <!-- ── What it scans ────────────────────────────────────────────────── -->
+    <section id="how" class="band">
+      <h2>What WSTS checks</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>Prefetch execution</h3>
+          <p>Flags execution of known offensive-security tools and Windows LOLBins (Mimikatz, PsExec, certutil, mshta, and more).</p>
+        </article>
+        <article class="card">
+          <h3>Startup persistence</h3>
+          <p>Inspects user and global Startup folders for suspicious scripts, shortcuts, and recently planted payloads.</p>
+        </article>
+        <article class="card">
+          <h3>Event-log tampering</h3>
+          <p>Detects cleared or recently modified Security, System, and Application logs — a common anti-forensic move.</p>
+        </article>
+        <article class="card">
+          <h3>Credential stores</h3>
+          <p>Checks DPAPI and Credential Manager artifacts for recent modification that may indicate theft attempts.</p>
+        </article>
+        <article class="card">
+          <h3>Amcache &amp; NTUSER</h3>
+          <p>Reviews application-execution history hives for recent tampering or unusual activity.</p>
+        </article>
+        <article class="card">
+          <h3>Local report</h3>
+          <p>Results render in your browser at <code>127.0.0.1</code> — generated on-device and never uploaded.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ── Trust / anti-malware-suspicion ──────────────────────────────── -->
+    <section id="trust" class="band band-trust">
+      <h2>Why this download is safe</h2>
+      <p class="band-intro">
+        Security tools are frequently flagged by antivirus engines because they
+        read the same forensic artifacts that malware touches. We are fully
+        transparent so you can trust — and independently verify — exactly what
+        you are running.
+      </p>
+      <div class="grid">
+        <article class="card card-trust">
+          <h3>Read-only by design</h3>
+          <p>WSTS never writes, deletes, modifies, or transmits any file. It opens artifacts for reading and reports what it finds. Nothing else.</p>
+        </article>
+        <article class="card card-trust">
+          <h3>Fully open source</h3>
+          <p>Every line is public. Read the source, audit the logic, or build the executable yourself from <a href="https://github.com/waynemcdon/spat" rel="noopener">our repository</a>.</p>
+        </article>
+        <article class="card card-trust">
+          <h3>No network access</h3>
+          <p>The scanner makes no outbound connections. You can verify this with your own firewall — block it entirely and it still works.</p>
+        </article>
+        <article class="card card-trust">
+          <h3>Signed &amp; checksummed</h3>
+          <p>Every release is published with a SHA-256 hash and an Authenticode code signature so you can confirm the file is genuine and unmodified.</p>
+        </article>
+        <article class="card card-trust">
+          <h3>Independently scanned</h3>
+          <p>We submit each build to VirusTotal. Review the multi-engine report before you run anything.</p>
+          <a class="inline-link" data-field="vt-link" href="https://www.virustotal.com/" rel="noopener">View VirusTotal report &rarr;</a>
+        </article>
+        <article class="card card-trust">
+          <h3>Why AV may still warn you</h3>
+          <p>Unsigned or low-reputation forensic tools can trigger heuristic "SmartScreen" prompts. That's expected — verify the hash below and you're protected.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ── Verify ──────────────────────────────────────────────────────── -->
+    <section id="verify" class="band">
+      <h2>Verify before you run</h2>
+      <p class="band-intro">
+        Confirm the file you downloaded matches our official release. If the hash
+        differs, <strong>do not run it</strong> — delete it and download again.
+      </p>
+
+      <div class="verify-block">
+        <h3>1. SHA-256 checksum</h3>
+        <p>Official hash for <code data-field="filename">WSTS-Setup-1.0.0.exe</code>:</p>
+        <pre class="hash" data-field="sha256">&lt;published with each release&gt;</pre>
+        <p class="muted">Verify in PowerShell:</p>
+        <pre class="cmd">Get-FileHash .\WSTS-Setup-1.0.0.exe -Algorithm SHA256</pre>
+      </div>
+
+      <div class="verify-block">
+        <h3>2. Authenticode signature</h3>
+        <p>Confirm the publisher and that the signature is valid:</p>
+        <pre class="cmd">Get-AuthenticodeSignature .\WSTS-Setup-1.0.0.exe | Format-List Status, SignerCertificate</pre>
+        <p class="muted">Expected status: <code>Valid</code> &middot; Publisher: <code>Antibody Cyber Technology, LLC</code></p>
+      </div>
+    </section>
+
+    <!-- ── Download ────────────────────────────────────────────────────── -->
+    <section id="download" class="band band-download">
+      <h2>Download WSTS</h2>
+      <div class="download-card">
+        <div class="download-info">
+          <p class="download-name" data-field="filename">WSTS-Setup-1.0.0.exe</p>
+          <p class="download-detail">
+            Windows 10 / 11 (64-bit) &middot;
+            <span data-field="filesize">~12 MB</span> &middot;
+            Version <span data-field="version">1.0.0</span>
+          </p>
+        </div>
+        <a class="btn btn-primary btn-lg" data-field="download-link" href="/downloads/WSTS-Setup-1.0.0.exe" rel="noopener" download>
+          Download
+        </a>
+      </div>
+      <p class="download-note">
+        For best protection, always download directly from
+        <strong>https://wsts.spatcyber.com</strong> and verify the SHA-256 hash
+        above. We never distribute WSTS through third-party sites.
+      </p>
+      <p class="download-admin">
+        Run as Administrator for full artifact access. WSTS opens a local
+        dashboard at <code>http://127.0.0.1:5900</code> in your browser.
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>
+      &copy; 2026 Antibody Cyber Technology, LLC &middot;
+      <a href="https://spatcyber.com" rel="noopener">spatcyber.com</a> &middot;
+      <a href="/security.txt">security.txt</a>
+    </p>
+    <p class="footer-fine">
+      WSTS is provided as-is for defensive security assessment of systems you own
+      or are authorized to inspect.
+    </p>
+  </footer>
+
+  <script src="/static/js/wsts.js" defer></script>
+</body>
+</html>

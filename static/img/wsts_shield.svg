@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" width="220" height="220" role="img" aria-label="WSTS — Windows Security Threat Scanner shield">
+  <defs>
+    <radialGradient id="wstsBody" cx="42%" cy="32%" r="75%">
+      <stop offset="0%" stop-color="#2a0d14"/>
+      <stop offset="55%" stop-color="#1a0a0f"/>
+      <stop offset="100%" stop-color="#0d0608"/>
+    </radialGradient>
+    <linearGradient id="wstsEdge" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ff6b85"/>
+      <stop offset="100%" stop-color="#e94560"/>
+    </linearGradient>
+    <linearGradient id="wstsPane" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff8198"/>
+      <stop offset="100%" stop-color="#e94560"/>
+    </linearGradient>
+    <filter id="wstsGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="2.4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Shield body -->
+  <path d="M110 12 L196 42 L196 112 Q192 168 110 208 Q28 168 24 112 L24 42 Z"
+        fill="url(#wstsBody)" stroke="url(#wstsEdge)" stroke-width="6"/>
+  <!-- Inner bevel -->
+  <path d="M110 26 L184 52 L184 110 Q181 158 110 192 Q39 158 36 110 L36 52 Z"
+        fill="none" stroke="#e94560" stroke-width="1.5" stroke-opacity="0.35"/>
+
+  <!-- Windows four-pane glyph (tilted, perspective) -->
+  <g filter="url(#wstsGlow)">
+    <path d="M84 86 L104 82 L104 104 L84 106 Z" fill="url(#wstsPane)"/>
+    <path d="M110 81 L136 76 L136 102 L110 104 Z" fill="url(#wstsPane)"/>
+    <path d="M84 112 L104 110 L104 132 L84 130 Z" fill="url(#wstsPane)"/>
+    <path d="M110 110 L136 108 L136 134 L110 132 Z" fill="url(#wstsPane)"/>
+  </g>
+
+  <!-- Scanner sweep line -->
+  <line x1="60" y1="150" x2="160" y2="150" stroke="#ff6b85" stroke-width="3"
+        stroke-linecap="round" stroke-opacity="0.85"/>
+  <circle cx="160" cy="150" r="4" fill="#ff6b85"/>
+
+  <!-- WSTS wordmark -->
+  <text x="110" y="178" text-anchor="middle"
+        font-family="Segoe UI, Arial, sans-serif" font-weight="800"
+        font-size="22" letter-spacing="3" fill="#ffd0d8">WSTS</text>
+</svg>

@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# PyInstaller build output
+build/
+dist/
+*.manifest
+
+# Release artifacts (binaries are published to the server, not the repo)
+downloads/*.exe
+downloads/*.msi
+downloads/*.zip
+downloads/*.sha256
+
+# Secrets / environment
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

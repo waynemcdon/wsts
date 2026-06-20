@@ -1,0 +1,75 @@
+{
+  "Comment": "WSTS subdomain + domain security hardening for spatcyber.com",
+  "Changes": [
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "wsts.spatcyber.com.",
+        "Type": "A",
+        "TTL": 300,
+        "ResourceRecords": [
+          { "Value": "REPLACE_WITH_SERVER_IP" }
+        ]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "wsts.spatcyber.com.",
+        "Type": "MX",
+        "TTL": 3600,
+        "ResourceRecords": [
+          { "Value": "0 ." }
+        ]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "wsts.spatcyber.com.",
+        "Type": "TXT",
+        "TTL": 3600,
+        "ResourceRecords": [
+          { "Value": "\"v=spf1 -all\"" }
+        ]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "_dmarc.wsts.spatcyber.com.",
+        "Type": "TXT",
+        "TTL": 3600,
+        "ResourceRecords": [
+          { "Value": "\"v=DMARC1; p=reject; sp=reject; adkim=s; aspf=s; rua=mailto:waynemcdon@msn.com\"" }
+        ]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "_dmarc.spatcyber.com.",
+        "Type": "TXT",
+        "TTL": 3600,
+        "ResourceRecords": [
+          { "Value": "\"v=DMARC1; p=reject; sp=reject; adkim=s; aspf=s; rua=mailto:waynemcdon@msn.com\"" }
+        ]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "spatcyber.com.",
+        "Type": "CAA",
+        "TTL": 3600,
+        "ResourceRecords": [
+          { "Value": "0 issue \"amazon.com\"" },
+          { "Value": "0 issue \"amazontrust.com\"" },
+          { "Value": "0 issue \"letsencrypt.org\"" },
+          { "Value": "0 issuewild \"amazon.com\"" },
+          { "Value": "0 iodef \"mailto:security@spatcyber.com\"" }
+        ]
+      }
+    }
+  ]
+}
