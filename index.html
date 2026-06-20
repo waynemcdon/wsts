@@ -122,8 +122,8 @@
           <p>The scanner makes no outbound connections. You can verify this with your own firewall — block it entirely and it still works.</p>
         </article>
         <article class="card card-trust">
-          <h3>Signed &amp; checksummed</h3>
-          <p>Every release is published with a SHA-256 hash and an Authenticode code signature so you can confirm the file is genuine and unmodified.</p>
+          <h3>Checksummed every release</h3>
+          <p>Every release is published with a SHA-256 hash so you can confirm the file is genuine and unmodified. Authenticode code-signing is being provisioned and will be added in a future build.</p>
         </article>
         <article class="card card-trust">
           <h3>Independently scanned</h3>
@@ -131,8 +131,8 @@
           <a class="inline-link" data-field="vt-link" href="https://www.virustotal.com/" rel="noopener">View VirusTotal report &rarr;</a>
         </article>
         <article class="card card-trust">
-          <h3>Why AV may still warn you</h3>
-          <p>Unsigned or low-reputation forensic tools can trigger heuristic "SmartScreen" prompts. That's expected — verify the hash below and you're protected.</p>
+          <h3>If your antivirus flags it</h3>
+          <p>A read-only forensic scanner reads the same credential and registry artifacts that malware touches, so an unsigned build can trigger a heuristic <strong>false-positive</strong> &mdash; Microsoft Defender may quarantine or delete it. To recover: open <strong>Windows Security &rarr; Virus &amp; threat protection &rarr; Protection history</strong>, find the WSTS detection, and choose <strong>Restore</strong> / <strong>Allow</strong>. Always verify the SHA-256 hash below first. We submit every build to Microsoft and VirusTotal.</p>
         </article>
       </div>
     </section>
@@ -155,9 +155,9 @@
 
       <div class="verify-block">
         <h3>2. Authenticode signature</h3>
-        <p>Confirm the publisher and that the signature is valid:</p>
+        <p>Code-signing is being provisioned. Until it is in place this build is <strong>unsigned</strong>, so Windows will report <code>NotSigned</code> &mdash; that is expected. Confirm authenticity with the SHA-256 hash above. You can check signature status with:</p>
         <pre class="cmd">Get-AuthenticodeSignature .\WSTS-Setup-1.0.0.exe | Format-List Status, SignerCertificate</pre>
-        <p class="muted">Expected status: <code>Valid</code> &middot; Publisher: <code>Antibody Cyber Technology, LLC</code></p>
+        <p class="muted">Current status: <code>NotSigned</code> &middot; Publisher (after signing): <code>Antibody Cyber Technology, LLC</code></p>
       </div>
     </section>
 
@@ -185,6 +185,13 @@
       <p class="download-admin">
         Run as Administrator for full artifact access. WSTS opens a local
         dashboard at <code>http://127.0.0.1:5900</code> in your browser.
+      </p>
+      <p class="download-note">
+        <strong>Heads-up:</strong> until code-signing is in place, Microsoft
+        Defender or SmartScreen may flag this unsigned forensic tool as a
+        false positive and quarantine it. If that happens, restore it from
+        <strong>Windows Security &rarr; Virus &amp; threat protection &rarr;
+        Protection history</strong> after verifying the SHA-256 hash above.
       </p>
     </section>
   </main>
