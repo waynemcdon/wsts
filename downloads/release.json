@@ -1,13 +1,11 @@
-{
-  "product": "WSTS - Windows Security Threat Scanner",
-  "version": "1.0.0",
-  "filename": "WSTS-Setup-1.0.0.exe",
-  "filesize": "15.5 MB",
-  "size_bytes": 16247139,
-  "sha256": "0e82c739e8e04d327d752f979c1abb527aa7e1fae7aa6826bc0d01e530e7515f",
-  "signed": false,
-  "publisher": "Antibody Cyber Technology, LLC",
-  "download_url": "/downloads/WSTS-Setup-1.0.0.exe",
-  "sha256_url": "/downloads/WSTS-Setup-1.0.0.exe.sha256",
-  "virustotal_url": "https://www.virustotal.com/gui/file/0e82c739e8e04d327d752f979c1abb527aa7e1fae7aa6826bc0d01e530e7515f"
+﻿{
+    "product":  "WSTS - Windows Security Threat Scanner",
+    "version":  "1.0.0",
+    "filename":  "WSTS-Setup-1.0.0.exe",
+    "filesize":  "15.5 MB",
+    "sha256":  "bb9dd651880e15dcd801fe0f97a43cf0e70b1be8383ef074f71bf5d242935af4",
+    "signed":  false,
+    "download_url":  "/downloads/WSTS-Setup-1.0.0.exe",
+    "virustotal_url":  "https://www.virustotal.com/gui/file/bb9dd651880e15dcd801fe0f97a43cf0e70b1be8383ef074f71bf5d242935af4",
+    "released":  "2026-06-20T19:02:24Z"
 }

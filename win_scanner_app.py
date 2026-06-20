@@ -480,6 +480,12 @@ HTML_TEMPLATE = r"""
   .scroll-wrap{max-height:480px;overflow-y:auto}
   .scroll-wrap::-webkit-scrollbar{width:6px}
   .scroll-wrap::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+  .app-footer{margin-top:32px;padding:20px 24px;border-top:1px solid var(--border);
+    text-align:center;color:var(--gray)}
+  .app-footer .footer-tagline{color:var(--text);font-size:0.95rem;margin:0 0 6px}
+  .app-footer .footer-tagline b{color:var(--white)}
+  .app-footer p{margin:4px 0;font-size:0.82rem}
 </style>
 </head>
 <body>
@@ -540,6 +546,11 @@ HTML_TEMPLATE = r"""
     <div class="sec-body" id="body-amcache"><div class="inaccessible">Run scan to load…</div></div>
   </section>
 </main>
+
+<footer class="app-footer">
+  <p class="footer-tagline">&#x1F6E1; <b>Built for defenders</b> &middot; Antibody Cyber Technology, LLC</p>
+  <p>&copy; 2026 Antibody Cyber Technology, LLC &middot; WSTS</p>
+</footer>
 
 <script>
 function sev(s){return `<span class="sev ${s}">${s}</span>`}
