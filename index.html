@@ -58,7 +58,7 @@
         Nothing ever leaves your machine.
       </p>
       <div class="hero-cta">
-        <a class="btn btn-primary" href="#download">Download for Windows</a>
+        <a class="btn btn-primary" href="#download">Download status</a>
         <a class="btn btn-ghost" href="#verify">Verify the file first</a>
       </div>
       <p class="hero-meta">
@@ -173,10 +173,17 @@
             Version <span data-field="version">1.0.0</span>
           </p>
         </div>
-        <a class="btn btn-primary btn-lg" data-field="download-link" href="/downloads/WSTS-Setup-1.0.0.exe" rel="noopener" download>
-          Download
-        </a>
+        <span class="btn btn-primary btn-lg btn-disabled" role="button" aria-disabled="true">
+          Temporarily unavailable
+        </span>
       </div>
+      <p class="download-note download-paused">
+        <strong>Downloads are temporarily paused.</strong> This release has been
+        submitted to Microsoft for analysis, and we have paused public downloads
+        until it has been reviewed and cleared. Please check back soon &mdash; or
+        <a href="mailto:info@antibodynet.net">contact us</a> if you need access in
+        the meantime.
+      </p>
       <p class="download-note">
         For best protection, always download directly from
         <strong>https://wsts.spatcyber.com</strong> and verify the SHA-256 hash
@@ -185,13 +192,6 @@
       <p class="download-admin">
         Run as Administrator for full artifact access. WSTS opens a local
         dashboard at <code>http://127.0.0.1:5900</code> in your browser.
-      </p>
-      <p class="download-note">
-        <strong>Heads-up:</strong> until code-signing is in place, Microsoft
-        Defender or SmartScreen may flag this unsigned forensic tool as a
-        false positive and quarantine it. If that happens, restore it from
-        <strong>Windows Security &rarr; Virus &amp; threat protection &rarr;
-        Protection history</strong> after verifying the SHA-256 hash above.
       </p>
     </section>
   </main>
