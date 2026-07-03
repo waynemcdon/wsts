@@ -11,21 +11,21 @@ Website: **https://wsts.spatcyber.com**
 
 ## What WSTS does
 
-WSTS looks at the same forensic artifacts that incident responders check after a
-suspected compromise. It **only reads** these artifacts — it never changes,
-deletes, quarantines, or transmits anything.
+WSTS examines the same forensic artifacts that incident responders review after a suspected compromise. It **only reads** these artifacts — it never changes, deletes, quarantines, or transmits anything.
 
-| Check | What it tells you |
-|-------|-------------------|
-| **Prefetch execution** | Whether known hacking tools or abused Windows utilities (Mimikatz, PsExec, certutil, mshta, etc.) have run recently. |
-| **Startup persistence** | Suspicious scripts or shortcuts planted in Startup folders that would re-launch malware on every boot. |
-| **Event-log tampering** | Cleared or recently wiped Security/System/Application logs — a common way attackers hide their tracks. |
-| **Credential stores** | Recent changes to DPAPI / Credential Manager files that may indicate credential theft. |
-| **Amcache & NTUSER** | Tampering in the hives that record application-execution history. |
+Check what it tells you.
 
-Each finding is tagged so you can tell routine activity from things worth a
-closer look (for example: `KNOWN_SUSPICIOUS_TOOL`, `RAN_LAST_24H`,
-`POSSIBLY_CLEARED`, `RECENTLY_MODIFIED`).
+**Prefetch execution**: Whether known hacking tools or abused Windows utilities (Mimikatz, PsExec, certutil, mshta, etc.) have run recently.
+
+**Startup persistence**: Suspicious scripts or shortcuts planted in Startup folders that would re-launch malware on every boot.
+
+**Event-log tampering**: Cleared or recently wiped Security/System/Application logs — a common way attackers hide their tracks.
+
+**Credential stores**: Recent changes to DPAPI / Credential Manager files that may indicate credential theft.
+
+**Amcache & NTUSER**: Tampering with the hives that record application-execution history.
+
+Each finding is tagged so you can tell routine activity from things worth a closer look (for example: `KNOWN_SUSPICIOUS_TOOL`, `RAN_LAST_24H`, `POSSIBLY_CLEARED`, `RECENTLY_MODIFIED`).
 
 ---
 
@@ -51,46 +51,33 @@ malware does. To remove all doubt, every WSTS release is fully verifiable.
 ## Installing & running
 
 1. Go to **https://wsts.spatcyber.com** and click **Download for Windows**.
-2. Verify the file (see below) — recommended.
+2. Verify the file (see [Verify download](https://wsts.spatcyber.com/#verify)) — recommended.
 3. **Right-click `WSTS-Setup-<version>.exe` → Run as administrator.**
-   Administrator rights let WSTS read protected logs and hives. Without them the
-   scan still runs, but some areas will show as *inaccessible*.
-4. WSTS opens a dashboard in your default browser at
-   **`http://127.0.0.1:5900`**.
+4. Administrator rights let WSTS read protected logs and hives. Without them, the scan still runs, but some areas will show as *inaccessible*.
+5. WSTS opens a dashboard in your default browser at **`http://127.0.0.1:5900`**.
 
-### If Windows SmartScreen warns you
-Because the tool is a specialized security utility, Windows may show a
-"Windows protected your PC" prompt the first time you run it. This is expected
-for newer security tools. After you've verified the SHA-256 hash, click
-**More info → Run anyway**.
+**If Windows SmartScreen warns you,** that's expected with newer security tools. After you've verified the SHA-256 hash, click **More info → Run anyway**.
 
 ---
 
 ## Using the dashboard
 
 1. Click **Run Scan**. The scan takes a few seconds.
-2. Results appear grouped into collapsible sections — Prefetch, Startup,
-   Event Logs, Credential Stores, and Amcache/NTUSER.
+2. Results are grouped into collapsible sections: Prefetch, Startup, Event Logs, Credential Stores, and Amcache/NTUSER.
 3. Click any section header to expand or collapse it.
-4. The summary row at the top shows the host name, scan time, and a count of
-   flagged items.
+4. The summary row at the top shows the host name, scan time, and a count of flagged items.
 
 ### Reading the results
 
-- **Green / informational** items are normal and expected.
+- **Green/informational** items are normal.
 - **Flagged** items carry one or more tags explaining *why* they were flagged.
-- A flag does **not** automatically mean infection. Some tools (like PowerShell
-  or `cmd`) are flagged for review because attackers abuse them — but they're
-  also used legitimately every day. Use the tags and timestamps as context.
+- A flag does **not** automatically mean infection. Some tools (like PowerShell or `cmd`) are flagged for review because attackers abuse them — but they're also used legitimately every day.
 
 ### What to do with a flagged item
 
 1. Note the **path**, **timestamp**, and **tags**.
-2. Ask: *do I recognize this program, and did I expect it to run at that time?*
-3. If something looks genuinely unexpected — for example a hacking tool you never
-   installed, or a Security log that was recently cleared — treat the machine as
-   potentially compromised: disconnect it from the network and consult an
-   incident-response professional.
+2. Ask: *Do I recognize this program, and did I expect it to run at that time?*
+3. If something looks genuinely unexpected — for example, a hacking tool you never installed, or a Security log that was recently cleared — treat the machine as potentially compromised: disconnect it from the network and consult an incident-response professional.
 
 ---
 
@@ -115,12 +102,9 @@ Get-AuthenticodeSignature .\WSTS-Setup-1.0.0.exe | Format-List Status, SignerCer
 
 ## Privacy
 
-- WSTS makes **no outbound network connections**. You can block it in your
-  firewall and it will still work.
-- All scanning happens locally. **No results, files, or telemetry leave your
-  computer.**
-- The dashboard is served only to `127.0.0.1` (your own machine) and is not
-  reachable from the network.
+- WSTS makes **no outbound network connections**. You can block it in your firewall, and it will still work.
+- All scanning happens locally. **No results, files, or telemetry leave your machine.**
+- No account, no registration, no email address required.
 
 ---
 
