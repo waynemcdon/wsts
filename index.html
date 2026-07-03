@@ -34,6 +34,7 @@
       </div>
     </div>
     <nav class="site-nav">
+      <a href="#readme">README</a>
       <a href="#how">How it works</a>
       <a href="#trust">Why it's safe</a>
       <a href="#verify">Verify download</a>
@@ -66,6 +67,67 @@
         Windows 10 / 11 (64-bit) &middot;
         Read-only &amp; offline
       </p>
+    </section>
+
+    <!-- ── README ───────────────────────────────────────────────────────── -->
+    <section id="readme" class="band band-readme">
+      <h2>README</h2>
+      <div class="readme-body">
+
+        <h3>What WSTS does</h3>
+        <p>WSTS looks at the same forensic artifacts that incident responders check after a suspected compromise. It <strong>only reads</strong> these artifacts &mdash; it never changes, deletes, quarantines, or transmits anything.</p>
+        <table class="readme-table">
+          <thead><tr><th>Check</th><th>What it tells you</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Prefetch execution</strong></td><td>Whether known hacking tools or abused Windows utilities (Mimikatz, PsExec, certutil, mshta, etc.) have run recently.</td></tr>
+            <tr><td><strong>Startup persistence</strong></td><td>Suspicious scripts or shortcuts planted in Startup folders that would re-launch malware on every boot.</td></tr>
+            <tr><td><strong>Event-log tampering</strong></td><td>Cleared or recently wiped Security/System/Application logs &mdash; a common way attackers hide their tracks.</td></tr>
+            <tr><td><strong>Credential stores</strong></td><td>Recent changes to DPAPI / Credential Manager files that may indicate credential theft.</td></tr>
+            <tr><td><strong>Amcache &amp; NTUSER</strong></td><td>Tampering in the hives that record application-execution history.</td></tr>
+          </tbody>
+        </table>
+        <p>Each finding is tagged so you can tell routine activity from things worth a closer look (for example: <code>KNOWN_SUSPICIOUS_TOOL</code>, <code>RAN_LAST_24H</code>, <code>POSSIBLY_CLEARED</code>, <code>RECENTLY_MODIFIED</code>).</p>
+
+        <h3>Installing &amp; running</h3>
+        <ol>
+          <li>Go to <strong>https://wsts.spatcyber.com</strong> and click <strong>Download for Windows</strong>.</li>
+          <li>Verify the file (see <a href="#verify">Verify download</a>) &mdash; recommended.</li>
+          <li><strong>Right-click <code>WSTS-Setup-&lt;version&gt;.exe</code> &rarr; Run as administrator.</strong><br>Administrator rights let WSTS read protected logs and hives. Without them the scan still runs, but some areas will show as <em>inaccessible</em>.</li>
+          <li>WSTS opens a dashboard in your default browser at <strong><code>http://127.0.0.1:5900</code></strong>.</li>
+        </ol>
+        <p class="readme-note"><strong>If Windows SmartScreen warns you:</strong> this is expected for newer security tools. After you&rsquo;ve verified the SHA-256 hash, click <strong>More info &rarr; Run anyway</strong>.</p>
+
+        <h3>Using the dashboard</h3>
+        <ol>
+          <li>Click <strong>Run Scan</strong>. The scan takes a few seconds.</li>
+          <li>Results appear grouped into collapsible sections &mdash; Prefetch, Startup, Event Logs, Credential Stores, and Amcache/NTUSER.</li>
+          <li>Click any section header to expand or collapse it.</li>
+          <li>The summary row at the top shows the host name, scan time, and a count of flagged items.</li>
+        </ol>
+
+        <h4>Reading the results</h4>
+        <ul>
+          <li><strong>Green / informational</strong> items are normal and expected.</li>
+          <li><strong>Flagged</strong> items carry one or more tags explaining <em>why</em> they were flagged.</li>
+          <li>A flag does <strong>not</strong> automatically mean infection. Some tools (like PowerShell or <code>cmd</code>) are flagged for review because attackers abuse them &mdash; but they&rsquo;re also used legitimately every day.</li>
+        </ul>
+
+        <h4>What to do with a flagged item</h4>
+        <ol>
+          <li>Note the <strong>path</strong>, <strong>timestamp</strong>, and <strong>tags</strong>.</li>
+          <li>Ask: <em>do I recognize this program, and did I expect it to run at that time?</em></li>
+          <li>If something looks genuinely unexpected &mdash; for example a hacking tool you never installed, or a Security log that was recently cleared &mdash; treat the machine as potentially compromised: disconnect it from the network and consult an incident-response professional.</li>
+        </ol>
+
+        <h3>Privacy</h3>
+        <ul>
+          <li>WSTS makes <strong>no outbound network connections</strong>. You can block it in your firewall and it will still work.</li>
+          <li>All scanning happens locally. <strong>No results, files, or telemetry leave your machine.</strong></li>
+          <li>No account, no registration, no email address required.</li>
+        </ul>
+        <p><a href="/privacy.html">Read the full Privacy Policy &rarr;</a></p>
+
+      </div>
     </section>
 
     <!-- ── What it scans ────────────────────────────────────────────────── -->
@@ -194,6 +256,7 @@
     <p>
       &copy; 2026 Antibody Cyber Technology, LLC &middot;
       <a href="https://spatcyber.com" rel="noopener">spatcyber.com</a> &middot;
+      <a href="/privacy.html">Privacy Policy</a> &middot;
       <a href="/security.txt">security.txt</a>
     </p>
     <p class="footer-fine">

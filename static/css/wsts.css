@@ -242,6 +242,50 @@ pre.cmd { color: #7ee787; }
   color: var(--fg);
 }
 
+/* ── README section ─────────────────────────────────────────────────────── */
+.band-readme { background: linear-gradient(180deg, rgba(88,166,255,0.03), transparent); }
+.readme-body { max-width: 820px; margin: 0 auto; }
+.readme-body h3 {
+  font-size: 1.15rem;
+  color: var(--accent2);
+  margin: 36px 0 10px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+}
+.readme-body h4 { font-size: 1rem; color: var(--fg); margin: 22px 0 8px; }
+.readme-body p, .readme-body li { color: var(--fg-dim); font-size: 0.95rem; line-height: 1.7; }
+.readme-body ul, .readme-body ol { padding-left: 1.4em; margin: 8px 0 16px; }
+.readme-body li { margin-bottom: 6px; }
+.readme-body strong { color: var(--fg); }
+.readme-note {
+  background: rgba(88,166,255,0.07);
+  border: 1px solid rgba(88,166,255,0.25);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  font-size: 0.9rem;
+}
+.readme-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0 24px;
+  font-size: 0.93rem;
+}
+.readme-table th {
+  text-align: left;
+  padding: 8px 12px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--fg);
+  font-size: 0.88rem;
+}
+.readme-table td {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  color: var(--fg-dim);
+  vertical-align: top;
+}
+.readme-table tr:nth-child(even) td { background: var(--bg2); }
+
 /* ── Footer ─────────────────────────────────────────────────────────────── */
 .site-footer {
   border-top: 1px solid var(--border);
