@@ -159,6 +159,61 @@
           <p>Results render in your browser at <code>127.0.0.1</code> — generated on-device and never uploaded.</p>
         </article>
       </div>
+
+      <!-- Understanding results -->
+      <h3 class="how-subhead">Understanding your results</h3>
+      <p class="band-intro" style="margin-bottom:20px;">Every finding is shown in a table with five columns. Here is what each one means.</p>
+
+      <table class="readme-table how-results-table">
+        <thead>
+          <tr><th>Column</th><th>What it means</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>SEV</strong></td>
+            <td>Severity — how much attention this item deserves.<br>
+              <span class="sev-pill sev-low">LOW</span> Normal background activity worth noting.<br>
+              <span class="sev-pill sev-medium">MEDIUM</span> Ran recently or is a commonly-abused tool — worth a quick look.<br>
+              <span class="sev-pill sev-high">HIGH</span> Known attack tool, suspicious location, or tampered log — investigate.
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Executable</strong></td>
+            <td>The name of the program Windows recorded. Standard Windows processes like <code>SVCHOST.EXE</code>, <code>MSEDGE.EXE</code>, and <code>DLLHOST.EXE</code> are normal. Be alert to names you don&rsquo;t recognise or known attack tools like <code>MIMIKATZ.EXE</code> or <code>PSEXEC.EXE</code>.</td>
+          </tr>
+          <tr>
+            <td><strong>Last Run</strong></td>
+            <td>The exact date and time Windows last recorded that program running. Useful for checking whether activity happened at an unexpected time (e.g. 3 AM when nobody was at the computer).</td>
+          </tr>
+          <tr>
+            <td><strong>Age</strong></td>
+            <td>How long ago the program ran, shown in hours or days (e.g. <code>0h</code> = within the last hour, <code>2d</code> = two days ago). Shorter ages mean more recent activity.</td>
+          </tr>
+          <tr>
+            <td><strong>Flags</strong></td>
+            <td>The reason the item appears in the list. Common flags:
+              <ul class="flag-list">
+                <li><code>RAN_LAST_1H</code> / <code>RAN_LAST_24H</code> — ran very recently. Not alarming on its own — just means it was active.</li>
+                <li><code>KNOWN_SUSPICIOUS_TOOL</code> — matches a known hacking or exploitation tool by name. <strong>Investigate immediately.</strong></li>
+                <li><code>POSSIBLY_CLEARED</code> — an event log is empty or was recently wiped. Normal if you or IT cleared it; suspicious if unexplained.</li>
+                <li><code>RECENTLY_MODIFIED</code> — a credential or registry artifact changed recently. Cross-check with your own activity.</li>
+                <li><code>SUSPICIOUS_LNK_TARGET</code> / <code>SCRIPT_IN_STARTUP</code> — a startup shortcut points somewhere unusual, or a script is set to run at login. Worth reviewing.</li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="how-verdict-box">
+        <h4>Quick guide: is this finding a problem?</h4>
+        <ol>
+          <li><strong>Check the Executable name.</strong> Is it a program you recognise? Standard Windows names are almost always safe.</li>
+          <li><strong>Check the Last Run time.</strong> Did it run while you were at the computer doing something that explains it?</li>
+          <li><strong>Check the Flag.</strong> <code>RAN_LAST_1H</code> alone is informational. <code>KNOWN_SUSPICIOUS_TOOL</code> or <code>POSSIBLY_CLEARED</code> with no explanation — escalate.</li>
+          <li>If you cannot explain a finding, <strong>do not ignore it</strong>. Disconnect the machine from the network and contact an IT or security professional.</li>
+        </ol>
+      </div>
+
     </section>
 
     <!-- ── Trust / anti-malware-suspicion ──────────────────────────────── -->
