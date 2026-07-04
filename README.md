@@ -136,7 +136,7 @@ window is open).
 
 ## Support
 
-Questions or to report a security issue: info@antibodynet.net
+Questions or to report a security issue: wayne@antibodynet.net
 Source code: https://github.com/waynemcdon/spat
 
 © 2026 Antibody Cyber Technology, LLC
